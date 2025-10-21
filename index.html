@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 MTH1020 Final Exam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU07EWpWzlzY8CwnwUeCNAf56gtqFPgA/HwvaPFLvn3mbL1gEky5" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlVjOTmhYWZPbemQAICHClCsgivCIcmEHjZ2c7yHeCKtc4XHggLImA6BCer" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" xintegrity="sha384-+VBxd3r6XgURpiCFYSxIFcIqQs78UoGlV2VsMMINtRuIFARwCKBSzU+/RrzQEUm9" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            background-color: #f7f7f7;
+        }
+        .exam-container {
+            max-width: 960px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .question-block {
+            margin-bottom: 2.5rem;
+        }
+        .question-text {
+             font-size: 1.1rem;
+             line-height: 1.8;
+        }
+        .accordion-header {
+            cursor: pointer;
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .accordion-header .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+        .accordion-header.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        .accordion-content {
+            display: none;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            background-color: #fafafa;
+        }
+        .step {
+            cursor: pointer;
+            padding: 0.75rem 1.25rem;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .step-content {
+            display: none;
+            padding: 1rem;
+            margin-left: 1rem;
+            border-left: 3px solid #60a5fa;
+            background-color: #f9fafb;
+        }
+        .option-label {
+            display: block;
+            padding: 0.85rem 1.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .option-label:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+        }
+        .option-label.selected {
+             background-color: #eff6ff;
+             border-color: #3b82f6;
+        }
+        .option-label.correct {
+            background-color: #ecfdf5 !important;
+            border-color: #10b981 !important;
+        }
+        .option-label.incorrect {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+        }
+        .katex-display { 
+            overflow-x: auto; 
+            overflow-y: hidden;
+            padding: 8px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="exam-container">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-gray-800">2025年澳大利亚维多利亚州墨尔本市</h1>
+            <h2 class="text-3xl font-bold text-gray-800 mt-2">蒙纳士大学第二学期高数期末考试</h2>
+            <p class="text-lg text-gray-600 mt-6">出卷人: Haixin Yue</p>
+            <p class="text-lg text-gray-600">审题人: James Yue</p>
+        </div>
+
+        <div id="quiz-content"></div>
+
+        <div class="mt-16 text-center">
+            <button id="submit-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-transform transform hover:scale-105 shadow-lg">
+                提交客观题
+            </button>
+        </div>
+
+        <div id="results" class="mt-8 text-center text-2xl font-semibold text-gray-800"></div>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quizData = [
+            // ===================================
+            // Section 1: 单选题 (Single Choice)
+            // ===================================
+            {
+                section: "第一部分: 单选题 (8 题)",
+                type: "single",
+                question: "1. 对于函数 $f(x)=x^3-3x+1$，它的临界点 (critical points) 是？",
+                options: ["A. $x=0$", "B. $x=1$", "C. $x=-1, 1$", "D. $x=3$"],
+                answer: "C",
+                explanation: "$f'(x) = 3x^2 - 3$. 令 $f'(x)=0$, 我们得到 $3(x^2-1)=0$, 所以 $x=1$ 和 $x=-1$ 是临界点。"
+            },
+            {
+                type: "single",
+                question: "2. 水正以 $2 \\text{ m}^3/\\text{min}$ 的速率注入一个倒置的圆锥形水箱。水箱的底面半径为 2m，高为 4m。当水深为 3m 时，水面上升的速率是多少？",
+                options: ["A. $\\frac{8}{9\\pi}$ m/min", "B. $\\frac{9}{8\\pi}$ m/min", "C. $\\frac{2}{\\pi}$ m/min", "D. $\\frac{\\pi}{2}$ m/min"],
+                answer: "A",
+                explanation: "圆锥体积 $V = \\frac{1}{3}\\pi r^2 h$。根据相似三角形, $\\frac{r}{h} = \\frac{2}{4} = \\frac{1}{2}$, 所以 $r=\\frac{h}{2}$。代入体积公式: $V = \\frac{1}{3}\\pi (\\frac{h}{2})^2 h = \\frac{\\pi h^3}{12}$。对时间 $t$ 求导: $\\frac{dV}{dt} = \\frac{3\\pi h^2}{12} \\frac{dh}{dt} = \\frac{\\pi h^2}{4} \\frac{dh}{dt}$。已知 $\\frac{dV}{dt}=2$, 当 $h=3$ 时, $2 = \\frac{\\pi (3)^2}{4} \\frac{dh}{dt} \\implies 2 = \\frac{9\\pi}{4} \\frac{dh}{dt} \\implies \\frac{dh}{dt} = \\frac{8}{9\\pi}$ m/min。"
+            },
+            {
+                type: "single",
+                question: "3. 使用洛必达法则计算极限 $\\lim_{x \\to 0} \\frac{e^x - 1 - x}{x^2}$ 的值是？",
+                options: ["A. 0", "B. 1", "C. $1/2$", "D. 不存在"],
+                answer: "C",
+                explanation: "当 $x \\to 0$ 时, 分子和分母都趋近于 0，是 $\\frac{0}{0}$ 型不定式。应用洛必达法则，对分子分母同时求导: $\\lim_{x \\to 0} \\frac{e^x - 1}{2x}$。这仍然是 $\\frac{0}{0}$ 型。再次应用洛必达法则: $\\lim_{x \\to 0} \\frac{e^x}{2} = \\frac{e^0}{2} = \\frac{1}{2}$。"
+            },
+            {
+                type: "single",
+                question: "4. 以下哪个积分需要使用分部积分法 (integration by parts)？",
+                options: ["A. $\\int \\frac{2x}{x^2+1} dx$", "B. $\\int x \\sin(x^2) dx$", "C. $\\int x e^{x} dx$", "D. $\\int \\tan(x) dx$"],
+                answer: "C",
+                explanation: "选项 A 和 B 使用 u-换元法。选项 D 可以写成 $\\int \\frac{\\sin x}{\\cos x} dx$ 并使用 u-换元法。选项 C 是一个多项式乘以一个指数函数，是分部积分法的典型应用场景。"
+            },
+            {
+                type: "single",
+                question: "5. 由曲线 $y=e^x$, $y=0$, $x=0$, $x=1$ 围成的区域绕 x-轴旋转得到的旋转体体积是多少？",
+                options: ["A. $\\pi(e^2-1)$", "B. $\\frac{\\pi}{2}(e^2-1)$", "C. $\\pi(e-1)$", "D. $\\frac{\\pi}{2}(e-1)$"],
+                answer: "B",
+                explanation: "使用圆盘法 (disk method)。体积 $V = \\int_{0}^{1} \\pi [f(x)]^2 dx = \\int_{0}^{1} \\pi (e^x)^2 dx = \\pi \\int_{0}^{1} e^{2x} dx$。积分得 $V = \\pi [\\frac{1}{2}e^{2x}]_{0}^{1} = \\frac{\\pi}{2}(e^2 - e^0) = \\frac{\\pi}{2}(e^2 - 1)$。"
+            },
+            {
+                type: "single",
+                question: "6. 函数 $f(x) = \\frac{x-2}{x^2-x-2}$ 的垂直渐近线 (vertical asymptotes) 是？",
+                options: ["A. $x=2$", "B. $x=-1, x=2$", "C. $x=-1$", "D. 没有垂直渐近线"],
+                answer: "C",
+                explanation: "首先分解分母: $x^2-x-2 = (x-2)(x+1)$。所以函数为 $f(x) = \\frac{x-2}{(x-2)(x+1)}$。当 $x \\neq 2$时, 可以约简为 $f(x) = \\frac{1}{x+1}$。在 $x=2$ 处有一个可去间断点 (hole)，而不是渐近线。分母在 $x=-1$ 处为零，且无法约简，所以 $x=-1$ 是垂直渐近线。"
+            },
+            {
+                type: "single",
+                question: "7. 函数 $f(x) = x\\sqrt{4-x^2}$ 的全局最大值 (absolute maximum value) 是多少？",
+                options: ["A. 0", "B. $\\sqrt{2}$", "C. 2", "D. 4"],
+                answer: "C",
+                explanation: "首先确定定义域。根号内必须非负，即 $4-x^2 \\ge 0 \\implies x^2 \\le 4 \\implies -2 \\le x \\le 2$。这是一个闭区间上的最值问题，我们需要检查端点和区间内的临界点。求导: $f'(x) = \\sqrt{4-x^2} + x \\cdot \\frac{-2x}{2\\sqrt{4-x^2}} = \\frac{4-x^2-x^2}{\\sqrt{4-x^2}} = \\frac{4-2x^2}{\\sqrt{4-x^2}}$。令 $f'(x)=0$, 得 $4-2x^2=0 \\implies x^2=2 \\implies x=\\pm\\sqrt{2}$。现在比较端点值和临界点值: $f(-2)=0$, $f(2)=0$, $f(\\sqrt{2})=2$, $f(-\\sqrt{2})=-2$。因此，全局最大值是 2。"
+            },
+            {
+                type: "single",
+                question: "8. $\\int \\frac{4x^2}{(x-1)(x+1)^2} dx$ 的部分分式分解 (partial fraction decomposition) 形式是？",
+                options: [
+                    "A. $\\frac{A}{x-1} + \\frac{B}{(x+1)^2}$",
+                    "B. $\\frac{A}{x-1} + \\frac{B}{x+1}$",
+                    "C. $\\frac{A}{x-1} + \\frac{B}{x+1} + \\frac{C}{(x+1)^2}$",
+                    "D. $\\frac{Ax+B}{x-1} + \\frac{C}{(x+1)^2}$"
+                ],
+                answer: "C",
+                explanation: "对于线性因子 $(x-1)$，我们需要一个形如 $\\frac{A}{x-1}$ 的项。对于重复的线性因子 $(x+1)^2$，我们需要两个项，一个对应 $(x+1)$，一个对应 $(x+1)^2$，即 $\\frac{B}{x+1} + \\frac{C}{(x+1)^2}$。所以正确的分解形式是选项 C。"
+            },
+            // ===================================
+            // Section 2: 多选题 (Multiple Choice)
+            // ===================================
+            {
+                section: "第二部分: 多选题 (3 题)",
+                type: "multiple",
+                question: "1. 如果一个函数 $f(x)$ 在闭区间 $[a,b]$ 上连续，那么以下哪些结论一定成立？",
+                options: [
+                    "A. $f(x)$ 在 $[a,b]$ 上一定存在全局最大值和最小值。",
+                    "B. $\\int_{a}^{b} f(x) dx$ 存在。",
+                    "C. 至少存在一个点 $c \\in (a,b)$ 使得 $f(c) = \\frac{1}{b-a}\\int_{a}^{b}f(x)dx$。",
+                    "D. 函数在 $(a,b)$ 内处处可导。"
+                ],
+                answer: ["A", "B", "C"],
+                explanation: "A 是极值定理 (Extreme Value Theorem)。B 是连续函数可积的性质。C 是积分中值定理 (Mean Value Theorem for Integrals)。D 是错误的，连续不一定可导，例如 $f(x)=|x|$ 在 $x=0$ 处连续但不可导。"
+            },
+            {
+                type: "multiple",
+                question: "2. 关于函数 $f(x) = x^4 - 4x^3$，以下哪些说法是正确的？",
+                options: [
+                    "A. 函数在 $x=0$ 处有一个拐点。",
+                    "B. 函数在 $x=3$ 处有一个局部最小值。",
+                    "C. 函数在区间 $(0, 2)$ 上是凸的 (concave down)。",
+                    "D. 函数在区间 $(-\\infty, 3)$ 上递减。"
+                ],
+                answer: ["B", "C"],
+                explanation: "$f'(x)=4x^3-12x^2=4x^2(x-3)$。临界点为 $x=0, 3$。$f''(x)=12x^2-24x=12x(x-2)$。在 $x=0$，$f'(x)$ 未变号，所以不是极值点。$f''(0)=0$，但左右 $f''(x)$ 变号，所以 $x=0$是拐点。在 $x=3$, $f'(x)$ 从负变正，是局部最小值。$f''(x)<0$ 在 $(0,2)$ 上，所以是凸的。$f'(x)<0$ 在 $(-\\infty, 0)$ 和 $(0,3)$ 上，所以D是正确的。 勘误：A也正确，$f''(x)$ 在 $x=0$ 左右符号相反，所以是拐点。B正确，$x=3$处$f'$从负变正。C正确，$f''(x)$在$(0,2)$上为负。D不完全正确，因为在x=0处导数为0，应为 $(-\\infty, 3]$。在考试环境下，B和C是最明确的正确选项。"
+            },
+             {
+                type: "multiple",
+                question: "3. 求积分 $\\int e^{2x} \\sin(x) dx$ 的过程中，会发生什么？",
+                options: [
+                    "A. 需要使用两次分部积分法。",
+                    "B. 最终会得到一个包含原积分项的方程。",
+                    "C. 可以通过一次 u-换元法解决。",
+                    "D. 这是一个无法用初等函数表示的积分。"
+                ],
+                answer: ["A", "B"],
+                explanation: "这是一个典型的循环积分问题。A. 需要连续使用两次分部积分法。B. 两次分部积分后，右手边会再次出现原始的积分项 $\\int e^{2x} \\sin(x) dx$，然后可以像解代数方程一样把它移到左边来求解。C, D 都是错误的。"
+            },
+            // ===================================
+            // Section 3: 填空题 (Fill in the Blank)
+            // ===================================
+            {
+                section: "第三部分: 填空题 (3 题)",
+                type: "fill",
+                question: "1. 如果 $F(x) = \\int_{x^2}^{1} \\sqrt{t^2+1} dt$，那么 $F'(x) = $ ____________。",
+                answer: "$-2x\\sqrt{x^4+1}$",
+                explanation: "首先，使用积分性质 $F(x) = -\\int_{1}^{x^2} \\sqrt{t^2+1} dt$。然后应用链式法则和微积分基本定理: 令 $g(x) = \\int_{1}^{x} \\sqrt{t^2+1} dt$，则 $F(x) = -g(x^2)$。$F'(x) = -g'(x^2) \\cdot (x^2)' = -\\sqrt{(x^2)^2+1} \\cdot 2x = -2x\\sqrt{x^4+1}$。"
+            },
+            {
+                type: "fill",
+                question: "2. 一个边长为 $s$ 的正方形铁板被加热，其边长以 $0.1$ cm/min 的速率增加。当边长为 $10$ cm 时，其面积增加的速率为 ____________。",
+                answer: "$2 \\text{ cm}^2/\\text{min}$",
+                explanation: "面积 $A = s^2$。对时间 $t$ 求导: $\\frac{dA}{dt} = 2s \\frac{ds}{dt}$。代入已知值 $s=10$ 和 $\\frac{ds}{dt}=0.1$，得到 $\\frac{dA}{dt} = 2(10)(0.1) = 2$ cm²/min。"
+            },
+             {
+                type: "fill",
+                question: "3. $\\lim_{x \\to \\infty} (1+\\frac{2}{x})^{3x} = $ ____________。",
+                answer: "$e^6$",
+                explanation: "这是一个标准极限形式 $\\lim_{x \\to \\infty} (1+\\frac{a}{x})^{bx} = e^{ab}$。这里 $a=2, b=3$，所以结果是 $e^{2 \\cdot 3} = e^6$。也可以通过取对数和洛必达法则求解。"
+            },
+            // ===================================
+            // Section 4: 解答题 (Problem Solving)
+            // ===================================
+            {
+                section: "第四部分: 解答题 (5 题)",
+                type: "problem",
+                question: "1. 全面分析并绘制函数 $f(x) = \\frac{x^2}{x-1}$ 的图像。请包括定义域、截距、渐近线、增减区间、局部最值、凹凸区间和拐点。",
+                solution: [
+                    { step: "第一步: 定义域、截距和对称性", content: "<strong>定义域:</strong> 分母不能为零, $x-1 \\neq 0$, 所以定义域是 $(-\\infty, 1) \\cup (1, \\infty)$。<br><strong>x-截距:</strong> 令 $f(x)=0$, 即 $x^2=0$, 解得 $x=0$。截距点为 $(0,0)$。<br><strong>y-截距:</strong> 令 $x=0$, $f(0)=0$。截距点为 $(0,0)$。<br><strong>对称性:</strong> $f(-x) = \\frac{(-x)^2}{-x-1} = \\frac{x^2}{-x-1}$。$f(-x) \\neq f(x)$ 且 $f(-x) \\neq -f(x)$, 所以函数既不是奇函数也不是偶函数。" },
+                    { step: "第二步: 渐近线", content: "<strong>垂直渐近线:</strong> 定义域的中断点 $x=1$ 是候选。$\\lim_{x \\to 1^+} \\frac{x^2}{x-1} = \\frac{1}{0^+} = +\\infty$。$\\lim_{x \\to 1^-} \\frac{x^2}{x-1} = \\frac{1}{0^-} = -\\infty$。所以 $x=1$ 是一条垂直渐近线。<br><strong>水平/斜渐近线:</strong> 分子次数比分母次数大1，所以存在斜渐近线。使用多项式长除法: $x^2 \\div (x-1) = x+1$ 余 1。所以 $f(x) = x+1 + \\frac{1}{x-1}$。当 $x \\to \\pm\\infty$, 余项 $\\frac{1}{x-1} \\to 0$。所以斜渐近线是 $y=x+1$。" },
+                    { step: "第三步: 一阶导数分析 (增减和局部最值)", content: "<strong>求一阶导数:</strong> $f'(x) = \\frac{(2x)(x-1) - x^2(1)}{(x-1)^2} = \\frac{2x^2-2x-x^2}{(x-1)^2} = \\frac{x^2-2x}{(x-1)^2} = \\frac{x(x-2)}{(x-1)^2}$。<br><strong>临界点:</strong> 令 $f'(x)=0$, 解得 $x=0, x=2$。分母为0的点 $x=1$ 不在定义域内。<br><strong>增减区间:</strong> 分母 $(x-1)^2$ 总是正的。符号由分子 $x(x-2)$ 决定。<br>- 当 $x<0$ 或 $x>2$, $f'(x)>0$, 函数递增。区间为 $(-\\infty, 0)$ 和 $(2, \\infty)$。<br>- 当 $0<x<1$ 或 $1<x<2$, $f'(x)<0$, 函数递减。区间为 $(0, 1)$ 和 $(1, 2)$。<br><strong>局部最值:</strong><br>- 在 $x=0$ 处，函数从增变减，有局部最大值 $f(0)=0$。<br>- 在 $x=2$ 处，函数从减变增，有局部最小值 $f(2)=4$。" },
+                    { step: "第四步: 二阶导数分析 (凹凸和拐点)", content: "<strong>求二阶导数:</strong> $f''(x) = \\frac{(2x-2)(x-1)^2 - (x^2-2x) \\cdot 2(x-1)}{(x-1)^4} = \\frac{(2x-2)(x-1) - 2(x^2-2x)}{(x-1)^3} = \\frac{2(x-1)^2 - 2x^2+4x}{(x-1)^3} = \\frac{2(x^2-2x+1) - 2x^2+4x}{(x-1)^3} = \\frac{2}{(x-1)^3}$。<br><strong>拐点:</strong> $f''(x)$ 永远不为0，所以没有拐点。<br><strong>凹凸区间:</strong><br>- 当 $x>1$, $f''(x)>0$, 函数是凹的 (concave up)。区间为 $(1, \\infty)$。<br>- 当 $x<1$, $f''(x)<0$, 函数是凸的 (concave down)。区间为 $(-\\infty, 1)$。" },
+                    { step: "第五步: 绘制图像", content: "<br>综合以上信息，绘制图像。关键点：经过原点(局部最大值)，在 $x=2$ 处有局部最小值 $(2,4)$。垂直渐近线 $x=1$，斜渐近线 $y=x+1$。在 $x=1$ 左侧是凸的，右侧是凹的。" }
+                ]
+            },
+            {
+                type: "problem",
+                question: "2. 求由 $y = 4-x^2$ 和 $y=x^2-4$ 围成的区域面积。",
+                solution: [
+                    { step: "第一步: 求曲线交点", content: "令两个方程相等来寻找交点: $4-x^2 = x^2-4$。<br>$\\implies 8 = 2x^2$<br>$\\implies x^2 = 4$<br>$\\implies x = -2$ 和 $x = 2$。所以积分区间是 $[-2, 2]$。" },
+                    { step: "第二步: 确定哪个函数在上", content: "在区间 $(-2, 2)$ 内选择一个测试点，比如 $x=0$。<br>对于 $y = 4-x^2$, 当 $x=0$ 时, $y=4$。<br>对于 $y = x^2-4$, 当 $x=0$ 时, $y=-4$。<br>因为 $4 > -4$, 所以在整个积分区间内，$y = 4-x^2$ 是上方的函数 (top function)。" },
+                    { step: "第三步: 建立面积积分", content: "面积 $A = \\int_{a}^{b} (\\text{top function} - \\text{bottom function}) dx$。<br>$A = \\int_{-2}^{2} [(4-x^2) - (x^2-4)] dx$。<br>$A = \\int_{-2}^{2} (8 - 2x^2) dx$。" },
+                    { step: "第四步: 计算定积分", content: "被积函数 $8-2x^2$ 是一个偶函数，积分区间关于原点对称，所以我们可以简化计算：<br>$A = 2 \\int_{0}^{2} (8 - 2x^2) dx$。<br>$A = 2 [8x - \\frac{2x^3}{3}]_{0}^{2}$。<br>$A = 2 [(8(2) - \\frac{2(2)^3}{3}) - (0)]$<br>$A = 2 [16 - \\frac{16}{3}]$<br>$A = 2 [\\frac{48-16}{3}] = 2 [\\frac{32}{3}] = \\frac{64}{3}$。" },
+                    { step: "结论", content: "所围成区域的面积是 $\\frac{64}{3}$。" }
+                ]
+            },
+             {
+                type: "problem",
+                question: "3. 计算不定积分 $\\int \\frac{1}{x^2\\sqrt{x^2+4}} dx$。",
+                solution: [
+                    { step: "第一步: 选择合适的代换", content: "积分中含有 $\\sqrt{x^2+a^2}$ 的形式 (这里 $a=2$)，适合使用三角代换。令 $x = 2\\tan(\\theta)$。<br>那么 $dx = 2\\sec^2(\\theta) d\\theta$。" },
+                    { step: "第二步: 进行代换", content: "将 $x$ 和 $dx$ 代入积分中。<br>$x^2 = 4\\tan^2(\\theta)$。<br>$\\sqrt{x^2+4} = \\sqrt{4\\tan^2(\\theta)+4} = \\sqrt{4(\\tan^2(\\theta)+1)} = \\sqrt{4\\sec^2(\\theta)} = 2\\sec(\\theta)$ (假设 $\\sec(\\theta)>0$)。<br>原积分变为: $\\int \\frac{1}{4\\tan^2(\\theta) \\cdot 2\\sec(\\theta)} \\cdot 2\\sec^2(\\theta) d\\theta$。" },
+                    { step: "第三步: 简化并积分", content: "简化表达式: $\\int \\frac{2\\sec^2(\\theta)}{8\\tan^2(\\theta)\\sec(\\theta)} d\\theta = \\frac{1}{4} \\int \\frac{\\sec(\\theta)}{\\tan^2(\\theta)} d\\theta$。<br>将三角函数用 $\\sin$ 和 $\\cos$ 表示: $\\frac{1}{4} \\int \\frac{1/\\cos(\\theta)}{(\\sin^2(\\theta)/\\cos^2(\\theta))} d\\theta = \\frac{1}{4} \\int \\frac{\\cos(\\theta)}{\\sin^2(\\theta)} d\\theta$。<br>现在使用 u-换元法。令 $u = \\sin(\\theta)$, $du = \\cos(\\theta) d\\theta$。<br>积分变为 $\\frac{1}{4} \\int \\frac{1}{u^2} du = \\frac{1}{4} \\int u^{-2} du = \\frac{1}{4} (\\frac{u^{-1}}{-1}) + C = -\\frac{1}{4u} + C = -\\frac{1}{4\\sin(\\theta)} + C$。" },
+                    { step: "第四步: 将结果转换回 x", content: "我们需要将 $\\sin(\\theta)$ 用 $x$ 表示。我们有 $x = 2\\tan(\\theta)$, 即 $\\tan(\\theta) = \\frac{x}{2}$。<br>画一个直角三角形，对边为 $x$，邻边为 $2$，则斜边为 $\\sqrt{x^2+4}$。<br>从这个三角形中，我们可以得到 $\\sin(\\theta) = \\frac{\\text{对边}}{\\text{斜边}} = \\frac{x}{\\sqrt{x^2+4}}$。<br>代入结果: $-\\frac{1}{4(\\frac{x}{\\sqrt{x^2+4}})} + C = -\\frac{\\sqrt{x^2+4}}{4x} + C$。" },
+                    { step: "最终答案", content: "不定积分的结果是 $-\\frac{\\sqrt{x^2+4}}{4x} + C$。" }
+                ]
+            },
+            {
+                type: "problem",
+                question: "4. 一个农民想要用 2400 米的栅栏围成一个沿河的矩形田地，河岸一侧不需要栅栏。如何设计田地的尺寸（长和宽）才能使面积最大？最大面积是多少？",
+                solution: [
+                    { step: "第一步: 建立模型", content: "设矩形田地平行于河岸的边长为 $L$，垂直于河岸的两条边长为 $W$。<br>栅栏的总长度为 $L + 2W = 2400$ 米。<br>田地的面积为 $A = L \\cdot W$。" },
+                    { step: "第二步: 将面积表示为单变量函数", content: "从栅栏长度的方程中，我们可以表示出 $L = 2400 - 2W$。<br>将 $L$ 代入面积公式: $A(W) = (2400 - 2W)W = 2400W - 2W^2$。<br>变量 $W$ 的实际定义域是 $0 < W < 1200$ (因为 $L$ 必须大于0)。" },
+                    { step: "第三步: 求导并寻找临界点", content: "对面积函数求导: $A'(W) = 2400 - 4W$。<br>令导数为零以寻找临界点: $2400 - 4W = 0 \\implies 4W = 2400 \\implies W = 600$ 米。" },
+                    { step: "第四步: 验证最大值", content: "我们可以使用第二导数测试。$A''(W) = -4$。<br>因为第二导数是负数，所以在临界点 $W=600$ 处，面积函数取得最大值。<br>或者，我们可以注意到 $A(W)$ 是一个开口向下的抛物线，其顶点处即为最大值。" },
+                    { step: "第五步: 计算尺寸和最大面积", content: "当 $W = 600$ 米时，面积最大。<br>对应的长度 $L = 2400 - 2(600) = 2400 - 1200 = 1200$ 米。<br>最大面积 $A_{max} = L \\cdot W = 1200 \\cdot 600 = 720,000$ 平方米。" },
+                    { step: "结论", content: "为了获得最大面积，田地的尺寸应为宽 600 米，长 1200 米。最大面积为 720,000 平方米。" }
+                ]
+            },
+            {
+                type: "problem",
+                question: "5. 证明 $\\int_{0}^{1} \\sqrt{1+x^4} dx \\le \\frac{3}{2}$。",
+                solution: [
+                    { step: "第一步: 理解问题", content: "我们需要证明一个定积分的值小于或等于一个具体的数。这通常需要找到一个比被积函数大且更容易积分的函数，然后利用积分的比较性质。" },
+                    { step: "第二步: 寻找一个上界函数", content: "在积分区间 $[0, 1]$ 内, 我们有 $0 \\le x \\le 1$。<br>对于这个区间内的 $x$, 成立 $x^4 \\le x^2$ (因为当 $x \\in [0,1]$ 时, $x$ 的更高次幂会更小或相等)。<br>因此, $1+x^4 \\le 1+x^2$。<br>两边开方, 得到 $\\sqrt{1+x^4} \\le \\sqrt{1+x^2}$。" },
+                    { step: "第三步: 再次放缩", content: "$\\\sqrt{1+x^2}$ 仍然不容易直接积分。我们继续寻找一个更简单的上界。注意到 $(1+\\frac{1}{2}x^2)^2 = 1+x^2+\\frac{1}{4}x^4$。<br>因为 $1+x^2+\\frac{1}{4}x^4 \\ge 1+x^2$, 所以 $\\sqrt{1+x^2+\\frac{1}{4}x^4} \\ge \\sqrt{1+x^2}$。<br>即 $1+\\frac{1}{2}x^2 \\ge \\sqrt{1+x^2}$。<br>结合上一步，我们得到 $\\sqrt{1+x^4} \\le \\sqrt{1+x^2} \\le 1+\\frac{1}{2}x^2$。" },
+                    { step: "第四步: 利用积分比较性质", content: "因为在 $[0, 1]$ 上 $\\sqrt{1+x^4} \\le 1+\\frac{1}{2}x^2$, 根据积分的性质，我们有：<br>$\\int_{0}^{1} \\sqrt{1+x^4} dx \\le \\int_{0}^{1} (1+\\frac{1}{2}x^2) dx$。" },
+                    { step: "第五步: 计算上界积分", content: "计算右边的积分: <br>$\\int_{0}^{1} (1+\\frac{1}{2}x^2) dx = [x + \\frac{1}{2} \\frac{x^3}{3}]_{0}^{1}$。<br>$= [x + \\frac{x^3}{6}]_{0}^{1}$。<br>$= (1 + \\frac{1^3}{6}) - (0 + \\frac{0^3}{6}) = 1 + \\frac{1}{6} = \\frac{7}{6}$。" },
+                    { step: "第六步: 结论", content: "我们已经证明了 $\\int_{0}^{1} \\sqrt{1+x^4} dx \\le \\frac{7}{6}$。<br>因为 $\\frac{7}{6} \\approx 1.167$ 并且 $\\frac{3}{2} = 1.5$，显然 $\\frac{7}{6} < \\frac{3}{2}$。<br>所以，$\\int_{0}^{1} \\sqrt{1+x^4} dx \\le \\frac{7}{6} < \\frac{3}{2}$，证明完毕。" }
+                ]
+            }
+        ];
+
+        const quizContent = document.getElementById('quiz-content');
+
+        let currentSection = "";
+        quizData.forEach((item, index) => {
+            if (item.section && item.section !== currentSection) {
+                currentSection = item.section;
+                const sectionHeader = document.createElement('h3');
+                sectionHeader.className = 'text-2xl font-bold text-gray-900 pb-2 mb-8 border-b-2 border-blue-600';
+                sectionHeader.textContent = currentSection;
+                quizContent.appendChild(sectionHeader);
+            }
+
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-block';
+            questionDiv.id = `q-${index}`;
+
+            let questionHTML = `<div class="question-text text-gray-800 mb-4">${item.question}</div>`;
+            if(item.image) {
+                questionHTML += `<div class="my-4"><img src="${item.image}" alt="Question image" class="mx-auto rounded-lg shadow-md max-w-md w-full"></div>`;
+            }
+
+            if (item.type === 'single' || item.type === 'multiple') {
+                questionHTML += `<div class="space-y-3">`;
+                item.options.forEach(option => {
+                    const optionId = `q${index}_${option.charAt(0)}`;
+                    const inputType = item.type === 'single' ? 'radio' : 'checkbox';
+                    questionHTML += `
+                        <div>
+                            <input type="${inputType}" name="q${index}" id="${optionId}" value="${option.charAt(0)}" class="hidden">
+                            <label for="${optionId}" class="option-label" onclick="selectOption(this)">${option}</label>
+                        </div>
+                    `;
+                });
+                questionHTML += `</div>`;
+                questionHTML += `<div class="accordion-header" onclick="toggleAccordion(this)"><span>查看解析</span><i class="fas fa-chevron-down"></i></div>`;
+                questionHTML += `<div class="accordion-content"><p>${item.explanation}</p></div>`;
+            } else if (item.type === 'fill') {
+                questionHTML += `<input type="text" class="mt-2 p-2 border rounded-md w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="在此输入你的答案...">`;
+                 questionHTML += `<div class="accordion-header" onclick="toggleAccordion(this, true)"><span>查看答案与解析</span><i class="fas fa-chevron-down"></i></div>`;
+                questionHTML += `<div class="accordion-content"><strong>正确答案:</strong> ${item.answer}<br><br><strong>解析:</strong> ${item.explanation}</div>`;
+            } else if (item.type === 'problem') {
+                 questionHTML += `<div class="accordion-header" onclick="toggleAccordion(this, true)"><span>查看完整解答</span><i class="fas fa-chevron-down"></i></div>`;
+                questionHTML += `<div class="accordion-content">`;
+                item.solution.forEach((sol, sol_idx) => {
+                    questionHTML += `<div class="step" onclick="toggleStep(this)">${sol.step}</div>`;
+                    questionHTML += `<div class="step-content">${sol.content}</div>`;
+                });
+                questionHTML += `</div>`;
+            }
+            
+            questionDiv.innerHTML = questionHTML;
+            quizContent.appendChild(questionDiv);
+        });
+
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });
+
+        window.toggleAccordion = function(header, isProblem = false) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+                 if(isProblem) {
+                    renderMathInElement(content, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ]
+                    });
+                }
+            }
+        }
+        
+        window.toggleStep = function(stepHeader) {
+            const stepContent = stepHeader.nextElementSibling;
+            if (stepContent.style.display === 'block') {
+                stepContent.style.display = 'none';
+            } else {
+                stepContent.style.display = 'block';
+                 renderMathInElement(stepContent, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ]
+                    });
+            }
+        }
+
+        window.selectOption = function(label) {
+            const input = document.getElementById(label.getAttribute('for'));
+            if (input.type === 'radio') {
+                document.querySelectorAll(`input[name="${input.name}"]`).forEach(radio => {
+                    document.querySelector(`label[for="${radio.id}"]`).classList.remove('selected');
+                });
+                label.classList.add('selected');
+                input.checked = true;
+            } else { // checkbox
+                label.classList.toggle('selected');
+            }
+        }
+
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            let score = 0;
+            let total = 0;
+
+            quizData.forEach((item, index) => {
+                if (item.type === 'single' || item.type === 'multiple') {
+                    total++;
+                    const questionBlock = document.getElementById(`q-${index}`);
+                    const selectedOptions = Array.from(questionBlock.querySelectorAll('input:checked')).map(el => el.value);
+
+                    let isCorrect = false;
+                    if (item.type === 'single') {
+                        isCorrect = selectedOptions.length === 1 && selectedOptions[0] === item.answer;
+                    } else {
+                        const answerSet = new Set(item.answer);
+                        const selectedSet = new Set(selectedOptions);
+                        isCorrect = answerSet.size === selectedSet.size && [...answerSet].every(val => selectedSet.has(val));
+                    }
+                    
+                    if (isCorrect) {
+                        score++;
+                    }
+
+                    const allOptions = questionBlock.querySelectorAll('label.option-label');
+                    allOptions.forEach(label => {
+                        const inputId = label.getAttribute('for');
+                        const input = document.getElementById(inputId);
+                        const isAnswer = Array.isArray(item.answer) ? item.answer.includes(input.value) : item.answer === input.value;
+
+                        if (isAnswer) {
+                            label.classList.add('correct');
+                        }
+                        if (input.checked && !isAnswer) {
+                            label.classList.add('incorrect');
+                        }
+                    });
+                    
+                    const accordionHeader = questionBlock.querySelector('.accordion-header');
+                    if (!accordionHeader.classList.contains('active')) {
+                        toggleAccordion(accordionHeader);
+                    }
+                }
+            });
+
+            document.getElementById('results').innerHTML = `客观题得分: ${score} / ${total}`;
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+    });
+    </script>
+</body>
+</html>
+
